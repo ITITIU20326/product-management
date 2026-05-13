@@ -1,18 +1,25 @@
+const Product = require("../../models/product.model");
+
 module.exports.index = async (req, res) => {
-  try {
-    const response = await fetch("https://dummyjson.com/products");
-    const data = await response.json();
+  const products = await Product.find({
+    status: "active",
+    deleted: false,
+  });
 
-    res.render("client/pages/products/index.pug", {
-      pageTitle: "Sản phẩm",
-      products: data.products || [],
-    });
-  } catch (error) {
-    console.error("Không lấy được dữ liệu sản phẩm:", error);
+  const newProducts = products.map((item) => {
+    const product = item.toObject();
 
-    res.render("client/pages/products/index.pug", {
-      pageTitle: "Sản phẩm",
-      products: [],
-    });
-  }
+    product.priceNew = `${product.price}$`;
+    product.priceOld = `${Math.round(
+      product.price / (1 - product.discountPercentage / 100),
+    )}$`;
+    product.discount = `-${Math.round(product.discountPercentage)}%`;
+
+    return product;
+  });
+
+  res.render("client/pages/products/index.pug", {
+    pageTitle: "Danh sách sản phẩm",
+    products: newProducts,
+  });
 };
