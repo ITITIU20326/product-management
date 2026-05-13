@@ -1,4 +1,19 @@
 extend ../../layouts/default.pug
-
+include ../../mixins/box-head.pug
 block main
-    h1 Trang danh sach san pham
+    .container.my-3 
+        .row 
+            .col-12 
+                +box-head("Danh sách sản phẩm")
+
+        .row 
+            each product in products
+                .col-12.col-md-6.col-lg-4 
+                    .product-item 
+                        .inner-image 
+                            img(src=product.thumbnail, alt=product.title)
+                        .inner-content
+                            h3.inner-title= product.title
+                            .inner-price-new= `${product.price}$`
+                            .inner-price-old= `${Math.round(product.price / (1 - product.discountPercentage / 100))}$`
+                            .inner-discount= `-${Math.round(product.discountPercentage)}%`
