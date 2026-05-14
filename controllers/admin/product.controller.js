@@ -38,11 +38,18 @@ module.exports.index = async (req, res) => {
     find.status = req.query.status;
   }
 
+  const keyword = req.query.keyword ? req.query.keyword.trim() : "";
+
+  if (keyword) {
+    find.title = new RegExp(keyword, "i");
+  }
+
   const products = await Product.find(find);
 
   res.render("admin/pages/products/index.pug", {
     pageTitle: "Trang tổng quan",
     products: products,
     fiterStatus: fiterStatus,
+    keyword: keyword,
   });
 };
